@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Aquisição — Grupo Souza Brasil</title>
+<script>
+  // aplica o tema salvo antes de pintar a tela (evita "flash")
+  (function(){try{var t=localStorage.getItem('dash-tema')||'light';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ===== TEMA ESCURO (padrão) ===== */
+  :root{
+    --bg:#0e0b0a; --bg2:#15100e; --card:#1a1512; --card2:#201813; --line:#2c2420;
+    --ink:#f4ede4; --ink-soft:#d8ccc0; --muted:#998e83; --faint:#6b625b;
+    --red:#e23b43; --red-deep:#A80C11;
+    --quente:#2fbd6b; --morno:#e0a62a; --frio:#8a8178;
+    --track:#120d0b; --fstep:#140f0d; --topbar:rgba(20,15,13,.72);
+    --bar-grad:linear-gradient(90deg,var(--red-deep),var(--red));
+    --kpi-grad:linear-gradient(180deg,var(--card2),var(--card));
+    --glow:radial-gradient(1100px 420px at 85% -5%,rgba(168,12,17,.14),transparent 60%);
+    --shadow:none;
+  }
+  /* ===== TEMA CLARO (white) ===== */
+  :root[data-theme="light"]{
+    --bg:#f3eee8; --bg2:#ffffff; --card:#ffffff; --card2:#ffffff; --line:#e7ded4;
+    --ink:#1a1614; --ink-soft:#3b332d; --muted:#6f6962; --faint:#a79e95;
+    --red:#A80C11; --red-deep:#640101;
+    --quente:#1f9d55; --morno:#c98a00; --frio:#8a8178;
+    --track:#f0e9e1; --fstep:#faf5f0; --topbar:rgba(255,255,255,.82);
+    --bar-grad:linear-gradient(90deg,var(--red-deep),var(--red));
+    --kpi-grad:#ffffff;
+    --glow:radial-gradient(1100px 420px at 85% -5%,rgba(168,12,17,.06),transparent 60%);
+    --shadow:0 1px 2px rgba(80,40,20,.04);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;
+    background-image:var(--glow)}
+  h1,h2,h3,.num{font-family:'Archivo',sans-serif;letter-spacing:-.02em}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+  a{color:inherit}
+
+  .topbar{border-bottom:1px solid var(--line);background:var(--topbar);backdrop-filter:blur(8px);position:sticky;top:0;z-index:5}
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:15px 22px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand .mark{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--red-deep),var(--red));color:#fff;
+    display:flex;align-items:center;justify-content:center;font-family:'Archivo';font-weight:900;font-size:21px;box-shadow:0 8px 22px rgba(168,12,17,.28)}
+  .brand .t1{font-family:'Archivo';font-weight:800;font-size:16px;line-height:1.1}
+  .brand .t2{font-size:12px;color:var(--muted)}
+  .top-right{display:flex;align-items:center;gap:12px}
+  .badge-demo{background:rgba(226,59,67,.12);border:1px solid rgba(226,59,67,.38);color:var(--red);
+    font-family:'Archivo';font-weight:700;font-size:10.5px;letter-spacing:.07em;padding:6px 12px;border-radius:20px}
+  :root[data-theme="light"] .badge-demo{background:rgba(168,12,17,.08);color:var(--red-deep)}
+  .updated{font-size:11.5px;color:var(--faint)}
+  .btn-top{font-size:12.5px;color:var(--muted);text-decoration:none;border:1px solid var(--line);padding:7px 12px;border-radius:9px;transition:.15s;background:none;cursor:pointer;font-family:'Inter'}
+  .btn-top:hover{color:var(--ink);border-color:var(--red)}
+
+  main{padding:24px 0 70px}
+  .sec-label{font-family:'Archivo';font-weight:800;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin:28px 0 13px;display:flex;align-items:center;gap:10px}
+  .sec-label::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:13px}
+  @media(max-width:900px){.kpis{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:560px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:var(--kpi-grad);border:1px solid var(--line);border-radius:15px;padding:17px 16px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+  .kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--red-deep),var(--red));opacity:.55}
+  .kpi .label{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:9px;line-height:1.3}
+  .kpi .num{font-size:31px;font-weight:900;color:var(--ink);line-height:1}
+  .kpi .sub{font-size:11px;color:var(--faint);margin-top:7px}
+  .kpi .sub.up{color:var(--quente);font-weight:600}
+
+  .grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:15px}
+  @media(max-width:860px){.grid2{grid-template-columns:1fr}}
+  .panel{background:var(--kpi-grad);border:1px solid var(--line);border-radius:17px;padding:21px;box-shadow:var(--shadow)}
+  .panel h3{font-size:15px;font-weight:800;margin-bottom:2px}
+  .panel .psub{font-size:12px;color:var(--muted);margin-bottom:16px}
+
+  .bar-row{display:flex;align-items:center;gap:11px;margin:11px 0}
+  .bar-row .name{width:128px;font-size:13px;font-weight:500;color:var(--ink-soft);flex:none}
+  .bar-track{flex:1;background:var(--track);border:1px solid var(--line);border-radius:7px;height:24px;overflow:hidden}
+  .bar-fill{height:100%;background:var(--bar-grad);border-radius:7px}
+  .bar-row .val{width:52px;text-align:right;font-family:'Archivo';font-weight:700;font-size:13px;flex:none}
+
+  .funnel{display:flex;flex-direction:column;gap:9px;margin-top:3px}
+  .fstep{background:var(--fstep);border:1px solid var(--line);border-radius:11px;padding:13px 15px;display:flex;justify-content:space-between;align-items:center}
+  .fstep.dest{border-color:rgba(47,189,107,.5);background:rgba(47,189,107,.08)}
+  .fstep .fl{font-size:13px;font-weight:500;color:var(--ink-soft)}
+  .fstep .fr{font-family:'Archivo';font-weight:800;font-size:18px}
+  .fstep .fp{font-size:11px;color:var(--faint);font-weight:600}
+
+  table{width:100%;border-collapse:collapse;margin-top:2px;font-size:13.5px}
+  th{text-align:left;font-family:'Archivo';font-weight:700;font-size:11px;letter-spacing:.05em;color:var(--faint);text-transform:uppercase;padding:9px 10px;border-bottom:1px solid var(--line)}
+  td{padding:12px 10px;border-bottom:1px solid var(--line);color:var(--ink-soft)}
+  tr:last-child td{border-bottom:none}
+  td b{color:var(--ink);font-weight:600}
+  .badge{display:inline-block;font-size:10.5px;font-weight:700;font-family:'Archivo';padding:3px 10px;border-radius:20px;text-transform:capitalize}
+  .b-quente{background:rgba(47,189,107,.16);color:var(--quente)}
+  .b-morno{background:rgba(224,166,42,.16);color:var(--morno)}
+  .b-frio{background:rgba(138,129,120,.18);color:var(--muted)}
+  .st{font-size:12.5px;color:var(--muted)}
+  .st.pago{color:var(--quente);font-weight:600}
+
+  .foot{margin-top:30px;padding:17px 19px;background:rgba(226,59,67,.06);border:1px solid rgba(226,59,67,.22);border-radius:13px;font-size:12.5px;color:var(--ink-soft);line-height:1.6}
+  .foot b{color:var(--red)}
+  :root[data-theme="light"] .foot{background:#fff4e8;border-color:#f0d9bd;color:#8a6a2f}
+  :root[data-theme="light"] .foot b{color:#6b4e1e}
+
+  .loading{text-align:center;color:var(--muted);padding:50px 0;font-size:14px}
+  svg text{font-family:'Inter',sans-serif}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <div class="brand">
+      <div class="mark">S</div>
+      <div>
+        <div class="t1">Grupo Souza Brasil</div>
+        <div class="t2">Painel de Aquisição · IA SDR (Bia)</div>
+      </div>
+    </div>
+    <div class="top-right">
+      <span class="badge-demo" id="demoBadge" style="display:none">● DADOS DE DEMONSTRAÇÃO</span>
+      <span class="updated" id="updated"></span>
+      <button class="btn-top" id="btnTema" type="button" title="Alternar tema claro/escuro">🌙 Tema</button>
+      <a class="btn-top" href="#" onclick="return false">Sair</a>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <div id="app"><div class="loading">Carregando painel…</div></div>
+</main>
+
+<script>
+const fmt = n => n.toLocaleString('pt-BR');
+let DADOS = null;
+window.PREVIEW_DATA = {"demo":true,"atualizado":"14/10/2026 13:27 · prévia V1","leadsPorDia":[6,9,5,8,11,7,10,13,9,12,8,14,10,7],"kpis":{"leads_mes":142,"leads_mes_delta":18,"leads_hoje":7,"leads_hoje_sub":"2 ainda em atendimento","taxa_qualif":68,"registros":23,"receita_c1":8050,"alto_ticket":11},"funil":[{"label":"Leads recebidos","val":142,"pct":100},{"label":"Qualificados (quente+morno)","val":97,"pct":68},{"label":"Em negociação / link enviado","val":41,"pct":29},{"label":"Registros pagos (R$ 350)","val":23,"pct":16,"destaque":true}],"servicos":[{"nome":"Música (autoral)","val":95},{"nome":"Marca","val":3},{"nome":"Outros","val":2}],"classif":[{"nome":"Quente","val":34,"cor":"#2fbd6b"},{"nome":"Morno","val":34,"cor":"#e0a62a"},{"nome":"Frio","val":32,"cor":"#8a8178"}],"ultimos":[{"nome":"Rafael M.","serv":"Registro de música","temp":"quente","st":"Pago ✓","pago":true},{"nome":"Bruna S.","serv":"Música (3 faixas)","temp":"quente","st":"Pago ✓","pago":true},{"nome":"MC Theo","serv":"Registro de música","temp":"morno","st":"Link enviado","pago":false},{"nome":"Aline P.","serv":"Registro de música","temp":"quente","st":"Pago ✓","pago":true},{"nome":"Dj Kaio","serv":"Marca do nome artístico","temp":"morno","st":"Capturado (outro serviço)","pago":false},{"nome":"Letícia R.","serv":"Registro de música","temp":"frio","st":"Sem resposta","pago":false}]};
+let ASSINATURA = '';   // "impressão digital" dos dados (ignora o horário) p/ só repintar quando mudar
+
+function assinatura(d){ const c = {...d}; delete c.atualizado; return JSON.stringify(c); }
+
+function pal(){
+  const s = getComputedStyle(document.documentElement);
+  const g = n => s.getPropertyValue(n).trim();
+  return {red:g('--red'), line:g('--line'), faint:g('--faint'), ink:g('--ink'), inkSoft:g('--ink-soft')};
+}
+
+async function carregar(){
+  let d;
+  try {
+    const r = await fetch('dados.php', {credentials:'same-origin'});
+    if(r.status === 401){ location.href = 'login.php'; return; }
+    d = await r.json();
+  } catch(e){
+    document.getElementById('app').innerHTML = '<div class="loading">Não foi possível carregar os dados. Recarregue a página.</div>';
+    return;
+  }
+  DADOS = d;
+  ASSINATURA = assinatura(d);
+  render(d);
+}
+
+// Refresh a cada 5 min. Como vamos ler o CUSTO do Meta Ads (que muda ao longo do
+// dia mesmo sem lead novo), o ciclo SEMPRE busca os dados frescos e repinta.
+// Usamos a assinatura só pra NÃO piscar a tela quando nada mudou de fato.
+async function checarAtualizacao(){
+  try{
+    const r = await fetch('dados.php', {credentials:'same-origin'});
+    if(r.status === 401){ location.href = 'login.php'; return; }
+    const d = await r.json();
+    DADOS = d;
+    const a = assinatura(d);
+    if(a !== ASSINATURA){ ASSINATURA = a; render(d); }  // só repinta se algo mudou (lead, pagamento, custo Meta)
+  }catch(e){ /* silencioso: tenta de novo no próximo ciclo */ }
+}
+/* refresh desligado no preview */
+
+function render(d){
+  const k = d.kpis;
+  if(d.demo){ const b=document.getElementById('demoBadge'); if(b) b.style.display='inline-block'; }
+  document.getElementById('updated').textContent = 'Atualizado em ' + d.atualizado;
+
+  document.getElementById('app').innerHTML = `
+    <div class="sec-label">Visão do mês</div>
+    <div class="kpis">
+      <div class="kpi"><div class="label">Leads no mês</div><div class="num">${fmt(k.leads_mes)}</div><div class="sub up">▲ ${k.leads_mes_delta}% vs. mês anterior</div></div>
+      <div class="kpi"><div class="label">Leads hoje</div><div class="num">${fmt(k.leads_hoje)}</div><div class="sub">${k.leads_hoje_sub}</div></div>
+      <div class="kpi"><div class="label">Taxa de qualificação</div><div class="num">${k.taxa_qualif}%</div><div class="sub">quentes + mornos</div></div>
+      <div class="kpi"><div class="label">Registros fechados</div><div class="num">${fmt(k.registros)}</div><div class="sub">música · R$ 350</div></div>
+      <div class="kpi"><div class="label">Receita Camada 1</div><div class="num">${fmt(k.receita_c1)}</div><div class="sub">R$ (${k.registros} × 350)</div></div>
+      <div class="kpi"><div class="label">Outros serviços (capturados)</div><div class="num">${fmt(k.alto_ticket)}</div><div class="sub">leads na base · Camada 2</div></div>
+    </div>
+
+    <div class="sec-label">Fluxo de leads</div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Leads por dia</h3>
+        <div class="psub">Últimos ${d.leadsPorDia.length} dias — inclui madrugada (a IA atende 24h)</div>
+        <svg id="chartLine" viewBox="0 0 680 220" width="100%" height="220" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Leads por dia"></svg>
+      </div>
+      <div class="panel">
+        <h3>Funil de conversão</h3>
+        <div class="psub">Do lead ao registro fechado</div>
+        <div class="funnel" id="funnel"></div>
+      </div>
+    </div>
+
+    <div class="sec-label">Perfil da demanda</div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Distribuição por serviço</h3>
+        <div class="psub">Confirma a tese: o nicho de música domina</div>
+        <div id="bars"></div>
+      </div>
+      <div class="panel">
+        <h3>Classificação dos leads</h3>
+        <div class="psub">Como a IA qualificou o mês</div>
+        <svg id="chartDonut" viewBox="0 0 320 180" width="100%" height="180" role="img" aria-label="Classificação dos leads"></svg>
+      </div>
+    </div>
+
+    <div class="sec-label">Últimos atendimentos</div>
+    <div class="panel">
+      <table>
+        <thead><tr><th>Lead</th><th>Serviço</th><th>Classificação</th><th>Status</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    ${d.demo ? `<div class="foot">
+      <b>Dados de demonstração.</b> Este painel mostra como a Jaqueline e o Ian vão
+      acompanhar a operação em tempo real. Os números acima são ilustrativos — o
+      próximo passo é conectar à fonte de dados real (leads que já estão chegando +
+      conversas da IA) para o painel atualizar sozinho.
+    </div>` : ``}
+  `;
+
+  desenharLinha(d.leadsPorDia);
+  desenharFunil(d.funil);
+  desenharBarras(d.servicos);
+  desenharDonut(d.classif);
+  desenharTabela(d.ultimos);
+}
+
+function desenharLinha(leadsPorDia){
+  const p = pal();
+  const w=680,h=220,pl=34,pr=14,pt=16,pb=28;
+  const max=Math.max(...leadsPorDia), n=leadsPorDia.length;
+  const x=i=> pl + i*(w-pl-pr)/(n-1);
+  const y=v=> pt + (1-v/max)*(h-pt-pb);
+  const pts=leadsPorDia.map((v,i)=>[x(i),y(v)]);
+  const path=pts.map((q,i)=>(i?"L":"M")+q[0].toFixed(1)+" "+q[1].toFixed(1)).join(" ");
+  const area=path+` L ${x(n-1).toFixed(1)} ${h-pb} L ${pl} ${h-pb} Z`;
+  let g="";
+  for(let kk=0;kk<=max;kk+=Math.ceil(max/4)){ const yy=y(kk); g+=`<line x1="${pl}" y1="${yy}" x2="${w-pr}" y2="${yy}" stroke="${p.line}" stroke-width="1"/><text x="${pl-8}" y="${yy+4}" font-size="10" text-anchor="end" fill="${p.faint}">${kk}</text>`; }
+  let lx="";
+  for(let i=0;i<n;i+=2){ lx+=`<text x="${x(i)}" y="${h-10}" font-size="10" fill="${p.faint}" text-anchor="middle">${i-n+1===0?'hoje':(n-1-i)+'d'}</text>`; }
+  const dots=pts.map(q=>`<circle cx="${q[0].toFixed(1)}" cy="${q[1].toFixed(1)}" r="3" fill="${p.red}"/>`).join("");
+  document.getElementById('chartLine').innerHTML =
+    g + `<path d="${area}" fill="${p.red}" fill-opacity="0.10"/>` +
+    `<path d="${path}" fill="none" stroke="${p.red}" stroke-width="2.5" stroke-linejoin="round"/>` +
+    dots + lx;
+}
+
+function desenharFunil(funil){
+  document.getElementById('funnel').innerHTML = funil.map(f=>`
+    <div class="fstep${f.destaque?' dest':''}">
+      <span class="fl">${f.label}</span>
+      <span><span class="fr" ${f.destaque?'style="color:var(--quente)"':''}>${fmt(f.val)}</span> <span class="fp">${f.pct}%</span></span>
+    </div>`).join("");
+}
+
+function desenharBarras(servicos){
+  document.getElementById('bars').innerHTML = servicos.map(s=>`
+    <div class="bar-row">
+      <div class="name">${s.nome}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${s.val}%"></div></div>
+      <div class="val">${s.val}%</div>
+    </div>`).join("");
+}
+
+function desenharDonut(classif){
+  const p = pal();
+  const cx=90,cy=90,r=62,sw=26, tot=classif.reduce((a,b)=>a+b.val,0);
+  let ang=-Math.PI/2, segs="";
+  classif.forEach(c=>{
+    const a2=ang+ (c.val/tot)*2*Math.PI;
+    const x1=cx+r*Math.cos(ang), y1=cy+r*Math.sin(ang);
+    const x2=cx+r*Math.cos(a2), y2=cy+r*Math.sin(a2);
+    const large=(a2-ang)>Math.PI?1:0;
+    segs+=`<path d="M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${r} ${r} 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)}" fill="none" stroke="${c.cor}" stroke-width="${sw}" stroke-linecap="butt"/>`;
+    ang=a2;
+  });
+  const leg=classif.map((c,i)=>`<g transform="translate(200,${48+i*34})"><rect width="13" height="13" rx="3" fill="${c.cor}"/><text x="20" y="11" font-size="13" fill="${p.inkSoft}">${c.nome}</text><text x="118" y="11" font-size="13" font-weight="700" fill="${p.ink}" text-anchor="end" font-family="Archivo">${c.val}%</text></g>`).join("");
+  document.getElementById('chartDonut').innerHTML = segs + leg;
+}
+
+function desenharTabela(ultimos){
+  document.getElementById('tbody').innerHTML = ultimos.map(u=>`
+    <tr>
+      <td><b>${u.nome}</b></td>
+      <td>${u.serv}</td>
+      <td><span class="badge b-${u.temp}">${u.temp}</span></td>
+      <td class="st ${u.pago?'pago':''}">${u.st}</td>
+    </tr>`).join("");
+}
+
+// ===== alternar tema claro/escuro =====
+function aplicarBotaoTema(){
+  const t = document.documentElement.getAttribute('data-theme');
+  const b = document.getElementById('btnTema');
+  if(b) b.textContent = (t === 'light') ? '🌙 Escuro' : '☀️ Claro';
+}
+document.getElementById('btnTema').addEventListener('click', function(){
+  const atual = document.documentElement.getAttribute('data-theme');
+  const novo = (atual === 'light') ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', novo);
+  try{ localStorage.setItem('dash-tema', novo); }catch(e){}
+  aplicarBotaoTema();
+  if(DADOS) render(DADOS); // re-desenha gráficos com as cores do novo tema
+});
+
+aplicarBotaoTema();
+carregar = async function(){ const d = window.PREVIEW_DATA; DADOS = d; ASSINATURA = assinatura(d); render(d); };
+carregar();
+</script>
+
+<div style="position:fixed;bottom:14px;left:14px;z-index:99;background:#A80C11;color:#fff;font-family:system-ui,sans-serif;font-size:11px;font-weight:700;padding:6px 12px;border-radius:20px;box-shadow:0 6px 18px rgba(0,0,0,.25)">PRÉVIA V1 · ainda não publicada</div>
+</body>
+</html>
