@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Painel de Aquisição — Grupo Souza Brasil</title>
+<link rel="icon" href="logo.svg">
 <script>
   // aplica o tema salvo antes de pintar a tela (evita "flash")
   (function(){try{var t=localStorage.getItem('dash-tema')||'light';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();
@@ -12,7 +13,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  /* ===== TEMA ESCURO (padrão) ===== */
   :root{
     --bg:#0e0b0a; --bg2:#15100e; --card:#1a1512; --card2:#201813; --line:#2c2420;
     --ink:#f4ede4; --ink-soft:#d8ccc0; --muted:#998e83; --faint:#6b625b;
@@ -22,9 +22,8 @@
     --bar-grad:linear-gradient(90deg,var(--red-deep),var(--red));
     --kpi-grad:linear-gradient(180deg,var(--card2),var(--card));
     --glow:radial-gradient(1100px 420px at 85% -5%,rgba(168,12,17,.14),transparent 60%);
-    --shadow:none;
+    --shadow:none; --chip:#1b1512; --chipon:linear-gradient(135deg,var(--red-deep),var(--red));
   }
-  /* ===== TEMA CLARO (white) ===== */
   :root[data-theme="light"]{
     --bg:#f3eee8; --bg2:#ffffff; --card:#ffffff; --card2:#ffffff; --line:#e7ded4;
     --ink:#1a1614; --ink-soft:#3b332d; --muted:#6f6962; --faint:#a79e95;
@@ -34,33 +33,47 @@
     --bar-grad:linear-gradient(90deg,var(--red-deep),var(--red));
     --kpi-grad:#ffffff;
     --glow:radial-gradient(1100px 420px at 85% -5%,rgba(168,12,17,.06),transparent 60%);
-    --shadow:0 1px 2px rgba(80,40,20,.04);
+    --shadow:0 1px 2px rgba(80,40,20,.04); --chip:#fff; --chipon:linear-gradient(135deg,var(--red-deep),var(--red));
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;
-    background-image:var(--glow)}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;background-image:var(--glow)}
   h1,h2,h3,.num{font-family:'Archivo',sans-serif;letter-spacing:-.02em}
   .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
   a{color:inherit}
 
   .topbar{border-bottom:1px solid var(--line);background:var(--topbar);backdrop-filter:blur(8px);position:sticky;top:0;z-index:5}
-  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:15px 22px}
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:13px 22px}
   .brand{display:flex;align-items:center;gap:12px}
-  .brand .mark{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--red-deep),var(--red));color:#fff;
-    display:flex;align-items:center;justify-content:center;font-family:'Archivo';font-weight:900;font-size:21px;box-shadow:0 8px 22px rgba(168,12,17,.28)}
+  .brand .logo{height:44px;width:auto;display:block}
   .brand .t1{font-family:'Archivo';font-weight:800;font-size:16px;line-height:1.1}
   .brand .t2{font-size:12px;color:var(--muted)}
   .top-right{display:flex;align-items:center;gap:12px}
-  .badge-demo{background:rgba(226,59,67,.12);border:1px solid rgba(226,59,67,.38);color:var(--red);
-    font-family:'Archivo';font-weight:700;font-size:10.5px;letter-spacing:.07em;padding:6px 12px;border-radius:20px}
+  .badge-demo{font-family:'Archivo';font-weight:700;font-size:10.5px;letter-spacing:.07em;padding:6px 12px;border-radius:20px;
+    background:rgba(226,59,67,.12);border:1px solid rgba(226,59,67,.38);color:var(--red)}
+  .badge-demo.oficial{background:rgba(47,189,107,.12);border-color:rgba(47,189,107,.4);color:var(--quente)}
   :root[data-theme="light"] .badge-demo{background:rgba(168,12,17,.08);color:var(--red-deep)}
+  :root[data-theme="light"] .badge-demo.oficial{background:rgba(31,157,85,.1);color:var(--quente)}
   .updated{font-size:11.5px;color:var(--faint)}
   .btn-top{font-size:12.5px;color:var(--muted);text-decoration:none;border:1px solid var(--line);padding:7px 12px;border-radius:9px;transition:.15s;background:none;cursor:pointer;font-family:'Inter'}
   .btn-top:hover{color:var(--ink);border-color:var(--red)}
 
-  main{padding:24px 0 70px}
+  /* barra de controles */
+  .controls{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding-top:20px}
+  .seg{display:inline-flex;background:var(--chip);border:1px solid var(--line);border-radius:11px;padding:3px;gap:3px}
+  .seg button{border:none;background:none;color:var(--muted);font-family:'Archivo';font-weight:700;font-size:12.5px;padding:8px 15px;border-radius:8px;cursor:pointer;transition:.12s}
+  .seg button.on{background:var(--chipon);color:#fff;box-shadow:0 6px 16px rgba(168,12,17,.25)}
+  .periodos{display:inline-flex;flex-wrap:wrap;gap:6px}
+  .periodos button{border:1px solid var(--line);background:var(--chip);color:var(--muted);font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:20px;cursor:pointer;transition:.12s;font-family:'Inter'}
+  .periodos button:hover{border-color:var(--red);color:var(--ink)}
+  .periodos button.on{background:var(--chipon);color:#fff;border-color:transparent}
+
+  main{padding:8px 0 70px}
   .sec-label{font-family:'Archivo';font-weight:800;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin:28px 0 13px;display:flex;align-items:center;gap:10px}
   .sec-label::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  .aviso{margin:18px 0 2px;padding:14px 17px;border-radius:13px;font-size:13px;line-height:1.5;
+    background:rgba(224,166,42,.1);border:1px solid rgba(224,166,42,.35);color:var(--morno)}
+  .aviso b{color:var(--ink)}
 
   .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:13px}
   @media(max-width:900px){.kpis{grid-template-columns:repeat(3,1fr)}}
@@ -68,9 +81,10 @@
   .kpi{background:var(--kpi-grad);border:1px solid var(--line);border-radius:15px;padding:17px 16px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
   .kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--red-deep),var(--red));opacity:.55}
   .kpi .label{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:9px;line-height:1.3}
-  .kpi .num{font-size:31px;font-weight:900;color:var(--ink);line-height:1}
+  .kpi .num{font-size:28px;font-weight:900;color:var(--ink);line-height:1}
   .kpi .sub{font-size:11px;color:var(--faint);margin-top:7px}
   .kpi .sub.up{color:var(--quente);font-weight:600}
+  .kpi .sub.down{color:var(--red);font-weight:600}
 
   .grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:15px}
   @media(max-width:860px){.grid2{grid-template-columns:1fr}}
@@ -79,10 +93,10 @@
   .panel .psub{font-size:12px;color:var(--muted);margin-bottom:16px}
 
   .bar-row{display:flex;align-items:center;gap:11px;margin:11px 0}
-  .bar-row .name{width:128px;font-size:13px;font-weight:500;color:var(--ink-soft);flex:none}
+  .bar-row .name{width:92px;font-size:13px;font-weight:500;color:var(--ink-soft);flex:none}
   .bar-track{flex:1;background:var(--track);border:1px solid var(--line);border-radius:7px;height:24px;overflow:hidden}
   .bar-fill{height:100%;background:var(--bar-grad);border-radius:7px}
-  .bar-row .val{width:52px;text-align:right;font-family:'Archivo';font-weight:700;font-size:13px;flex:none}
+  .bar-row .val{width:46px;text-align:right;font-family:'Archivo';font-weight:700;font-size:13px;flex:none}
 
   .funnel{display:flex;flex-direction:column;gap:9px;margin-top:3px}
   .fstep{background:var(--fstep);border:1px solid var(--line);border-radius:11px;padding:13px 15px;display:flex;justify-content:space-between;align-items:center}
@@ -102,6 +116,19 @@
   .b-frio{background:rgba(138,129,120,.18);color:var(--muted)}
   .st{font-size:12.5px;color:var(--muted)}
   .st.pago{color:var(--quente);font-weight:600}
+  .vazio{color:var(--faint);font-size:13px;padding:24px 4px;text-align:center}
+
+  /* aprendizado da IA */
+  .grid3{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:15px}
+  @media(max-width:860px){.grid3{grid-template-columns:1fr}}
+  .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{background:var(--fstep);border:1px solid var(--line);border-radius:20px;padding:6px 12px;font-size:12.5px;color:var(--ink-soft);display:inline-flex;align-items:center;gap:7px}
+  .tag .c{font-family:'Archivo';font-weight:800;color:var(--red);font-size:12px}
+  .qlist{display:flex;flex-direction:column;gap:9px}
+  .qitem{display:flex;justify-content:space-between;gap:10px;align-items:center;background:var(--fstep);border:1px solid var(--line);border-radius:10px;padding:10px 13px}
+  .qitem .qt{font-size:12.8px;color:var(--ink-soft);line-height:1.35}
+  .qitem .qn{font-family:'Archivo';font-weight:800;font-size:13px;color:var(--red);flex:none}
+  .ia-nota{font-size:11.5px;color:var(--faint);margin-top:12px;font-style:italic}
 
   .foot{margin-top:30px;padding:17px 19px;background:rgba(226,59,67,.06);border:1px solid rgba(226,59,67,.22);border-radius:13px;font-size:12.5px;color:var(--ink-soft);line-height:1.6}
   .foot b{color:var(--red)}
@@ -117,14 +144,14 @@
 <div class="topbar">
   <div class="wrap">
     <div class="brand">
-      <div class="mark">S</div>
+      <img class="logo" src="logo.svg" alt="Grupo Souza Brasil">
       <div>
         <div class="t1">Grupo Souza Brasil</div>
         <div class="t2">Painel de Aquisição · IA SDR (Bia)</div>
       </div>
     </div>
     <div class="top-right">
-      <span class="badge-demo" id="demoBadge" style="display:none">● DADOS DE DEMONSTRAÇÃO</span>
+      <span class="badge-demo" id="demoBadge" style="display:none"></span>
       <span class="updated" id="updated"></span>
       <button class="btn-top" id="btnTema" type="button" title="Alternar tema claro/escuro">🌙 Tema</button>
       <a class="btn-top" href="#" onclick="return false">Sair</a>
@@ -133,14 +160,30 @@
 </div>
 
 <main class="wrap">
+  <div class="controls">
+    <div class="seg" id="segModo">
+      <button type="button" data-modo="demo" class="on">Demonstração</button>
+      <button type="button" data-modo="real">Oficial</button>
+    </div>
+    <div class="periodos" id="periodos">
+      <button type="button" data-p="hoje">Hoje</button>
+      <button type="button" data-p="ontem">Ontem</button>
+      <button type="button" data-p="7d">7d</button>
+      <button type="button" data-p="14d">14d</button>
+      <button type="button" data-p="30d">30d</button>
+      <button type="button" data-p="mes" class="on">Mês</button>
+      <button type="button" data-p="mespassado">Mês passado</button>
+    </div>
+  </div>
   <div id="app"><div class="loading">Carregando painel…</div></div>
 </main>
 
 <script>
-const fmt = n => n.toLocaleString('pt-BR');
-let DADOS = null;
-window.PREVIEW_DATA = {"demo":true,"atualizado":"14/10/2026 13:27 · prévia V1","leadsPorDia":[6,9,5,8,11,7,10,13,9,12,8,14,10,7],"kpis":{"leads_mes":142,"leads_mes_delta":18,"leads_hoje":7,"leads_hoje_sub":"2 ainda em atendimento","taxa_qualif":68,"registros":23,"receita_c1":8050,"alto_ticket":11},"funil":[{"label":"Leads recebidos","val":142,"pct":100},{"label":"Qualificados (quente+morno)","val":97,"pct":68},{"label":"Em negociação / link enviado","val":41,"pct":29},{"label":"Registros pagos (R$ 350)","val":23,"pct":16,"destaque":true}],"servicos":[{"nome":"Música (autoral)","val":95},{"nome":"Marca","val":3},{"nome":"Outros","val":2}],"classif":[{"nome":"Quente","val":34,"cor":"#2fbd6b"},{"nome":"Morno","val":34,"cor":"#e0a62a"},{"nome":"Frio","val":32,"cor":"#8a8178"}],"ultimos":[{"nome":"Rafael M.","serv":"Registro de música","temp":"quente","st":"Pago ✓","pago":true},{"nome":"Bruna S.","serv":"Música (3 faixas)","temp":"quente","st":"Pago ✓","pago":true},{"nome":"MC Theo","serv":"Registro de música","temp":"morno","st":"Link enviado","pago":false},{"nome":"Aline P.","serv":"Registro de música","temp":"quente","st":"Pago ✓","pago":true},{"nome":"Dj Kaio","serv":"Marca do nome artístico","temp":"morno","st":"Capturado (outro serviço)","pago":false},{"nome":"Letícia R.","serv":"Registro de música","temp":"frio","st":"Sem resposta","pago":false}]};
-let ASSINATURA = '';   // "impressão digital" dos dados (ignora o horário) p/ só repintar quando mudar
+const fmt = n => (n||0).toLocaleString('pt-BR');
+const brl = n => 'R$ ' + (n||0).toLocaleString('pt-BR');
+let DADOS = null, ASSINATURA = '';
+let MODO = 'demo', PERIODO = 'mes';
+window.PREVIEW_DATASETS = {"demo":{"hoje":{"demo":true,"periodoLabel":"hoje","atualizado":"14/10/2026 10:52 · prévia V2","vazio":false,"kpis":{"leads":1,"delta":-67,"leads_hoje":1,"taxa_qualif":100,"registros":0,"receita":0,"ticket":0,"outros":0},"leadsPorDia":[3,4,4,4,5,7,5],"funil":[{"label":"Leads recebidos","val":1,"pct":100},{"label":"Qualificados (quente+morno)","val":1,"pct":100},{"label":"Em negociação / link enviado","val":0,"pct":0},{"label":"Registros pagos","val":0,"pct":0,"destaque":true}],"servicos":[{"nome":"Música","val":100},{"nome":"Marca","val":0},{"nome":"Outros","val":0}],"classif":[{"nome":"Quente","val":0,"cor":"#2fbd6b"},{"nome":"Morno","val":100,"cor":"#e0a62a"},{"nome":"Frio","val":0,"cor":"#8a8178"}],"ultimos":[{"nome":"Camila S.","serv":"Registro de música","temp":"morno","st":"Em atendimento","pago":false}],"aprendizado":{"vazio":false,"termos":[{"t":"registrar música","n":48},{"t":"direito autoral","n":41},{"t":"quanto custa","n":37},{"t":"letra e melodia","n":29},{"t":"proteger","n":26},{"t":"plágio","n":19},{"t":"nome artístico","n":15},{"t":"álbum","n":12},{"t":"INPI","n":9},{"t":"cópia","n":7}],"duvidas":[{"t":"Quanto tempo demora o registro?","n":22},{"t":"O que está incluído no valor?","n":18},{"t":"Preciso registrar letra e melodia separado?","n":14},{"t":"Como pago? Tem parcelamento?","n":13},{"t":"Registro garante que ninguém copia?","n":9}],"objecoes":[{"t":"Tá caro / cabe no orçamento?","n":16},{"t":"Vou pensar / depois eu vejo","n":12},{"t":"É golpe? Desconfiança","n":7},{"t":"Quero falar por telefone","n":5}]},"modo":"demo"},"ontem":{"demo":true,"periodoLabel":"ontem","atualizado":"14/10/2026 10:52 · prévia V2","vazio":false,"kpis":{"leads":5,"delta":-29,"leads_hoje":1,"taxa_qualif":60,"registros":1,"receita":350,"ticket":350,"outros":0},"leadsPorDia":[2,2,4,6,5,7,5],"funil":[{"label":"Leads recebidos","val":5,"pct":100},{"label":"Qualificados (quente+morno)","val":3,"pct":60},{"label":"Em negociação / link enviado","val":2,"pct":40},{"label":"Registros pagos","val":1,"pct":20,"destaque":true}],"servicos":[{"nome":"Música","val":100},{"nome":"Marca","val":0},{"nome":"Outros","val":0}],"classif":[{"nome":"Quente","val":40,"cor":"#2fbd6b"},{"nome":"Morno","val":20,"cor":"#e0a62a"},{"nome":"Frio","val":40,"cor":"#8a8178"}],"ultimos":[{"nome":"Caio R.","serv":"Registro de música","temp":"frio","st":"Em atendimento","pago":false},{"nome":"Rodrigo N.","serv":"Registro de música","temp":"quente","st":"Pago ✓","pago":true},{"nome":"Yasmin O.","serv":"Registro de música","temp":"quente","st":"Link enviado","pago":false},{"nome":"Lucas F.","serv":"Música (álbum)","temp":"morno","st":"Em atendimento","pago":false},{"nome":"Aline P.","serv":"Registro de música","temp":"frio","st":"Em atendimento","pago":false}],"aprendizado":{"vazio":false,"termos":[{"t":"registrar música","n":48},{"t":"direito autoral","n":41},{"t":"quanto custa","n":37},{"t":"letra e melodia","n":29},{"t":"proteger","n":26},{"t":"plágio","n":19},{"t":"nome artístico","n":15},{"t":"álbum","n":12},{"t":"INPI","n":9},{"t":"cópia","n":7}],"duvidas":[{"t":"Quanto tempo demora o registro?","n":22},{"t":"O que está incluído no valor?","n":18},{"t":"Preciso registrar letra e melodia separado?","n":14},{"t":"Como pago? Tem parcelamento?","n":13},{"t":"Registro garante que ninguém copia?","n":9}],"objecoes":[{"t":"Tá caro / cabe no orçamento?","n":16},{"t":"Vou pensar / depois eu vejo","n":12},{"t":"É golpe? Desconfiança","n":7},{"t":"Quero falar por telefone","n":5}]},"modo":"demo"},"7d":{"demo":true,"periodoLabel":"últimos 7 dias","atualizado":"14/10/2026 10:52 · prévia V2","vazio":false,"kpis":{"leads":32,"delta":19,"leads_hoje":1,"taxa_qualif":75,"registros":7,"receita":5570,"ticket":796,"outros":3},"leadsPorDia":[3,4,4,4,5,7,5],"funil":[{"label":"Leads recebidos","val":32,"pct":100},{"label":"Qualificados (quente+morno)","val":24,"pct":75},{"label":"Em negociação / link enviado","val":12,"pct":38},{"label":"Registros pagos","val":7,"pct":22,"destaque":true}],"servicos":[{"nome":"Música","val":91},{"nome":"Marca","val":9},{"nome":"Outros","val":0}],"classif":[{"nome":"Quente","val":38,"cor":"#2fbd6b"},{"nome":"Morno","val":38,"cor":"#e0a62a"},{"nome":"Frio","val":25,"cor":"#8a8178"}],"ultimos":[{"nome":"Camila S.","serv":"Registro de música","temp":"morno","st":"Em atendimento","pago":false},{"nome":"Caio R.","serv":"Registro de música","temp":"frio","st":"Em atendimento","pago":false},{"nome":"Rodrigo N.","serv":"Registro de música","temp":"quente","st":"Pago ✓","pago":true},{"nome":"Yasmin O.","serv":"Registro de música","temp":"quente","st":"Link enviado","pago":false},{"nome":"Lucas F.","serv":"Música (álbum)","temp":"morno","st":"Em atendimento","pago":false},{"nome":"Aline P.","serv":"Registro de música","temp":"frio","st":"Em atendimento","pago":false},{"nome":"Lucas F.","serv":"Registro de música","temp":"quente","st":"Pago ✓","pago":true},{"nome":"Felipe G.","serv":"Registro de música","temp":"quente","st":"Link enviado","pago":false}],"aprendizado":{"vazio":false,"termos":[{"t":"registrar música","n":48},{"t":"direito autoral","n":41},{"t":"quanto custa","n":37},{"t":"letra e melodia","n":29},{"t":"proteger","n":26},{"t":"plágio","n":19},{"t":"nome artístico","n":15},{"t":"álbum","n":12},{"t":"INPI","n":9},{"t":"cópia","n":7}],"duvidas":[{"t":"Quanto tempo demora o registro?","n":22},{"t":"O que está incluído no valor?","n":18},{"t":"Preciso registrar letra e melodia separado?","n":14},{"t":"Como pago? Tem parcelamento?","n":13},{"t":"Registro garante que ninguém copia?","n":9}],"objecoes":[{"t":"Tá caro / cabe no orçamento?","n":16},{"t":"Vou pensar / depois eu vejo","n":12},{"t":"É golpe? Desconfiança","n":7},{"t":"Quero falar por telefone","n":5}]},"modo":"demo"},"14d":{"demo":true,"periodoLabel":"últimos 14 dias","atualizado":"14/10/2026 10:52 · prévia V2","vazio":false,"kpis":{"leads":59,"delta":-3,"leads_hoje":1,"taxa_qualif":73,"registros":12,"receita":9550,"ticket":796,"outros":10},"leadsPorDia":[2,4,5,6,6,3,1,3,4,4,4,5,7,5],"funil":[{"label":"Leads recebidos","val":59,"pct":100},{"label":"Qualificados (quente+morno)","val":43,"pct":73},{"label":"Em negociação / link enviado","val":18,"pct":31},{"label":"Registros pagos","val":12,"pct":20,"destaque":true}],"servicos":[{"nome":"Música","val":83},{"nome":"Marca","val":10},{"nome":"Outros","val":7}],"classif":[{"nome":"Quente","val":41,"cor":"#2fbd6b"},{"nome":"Morno","val":32,"cor":"#e0a62a"},{"nome":"Frio","val":27,"cor":"#8a8178"}],"ultimos":[{"nome":"Camila S.","serv":"Registro de música","temp":"morno","st":"Em atendimento","pago":false},{"nome":"Caio R.","serv":"Registro de música","temp":"frio","st":"Em atendimento","pago":false},{"nome":"Rodrigo N.","serv":"Registro de música","temp":"quente","st":"Pago ✓","pago":true},{"nome":"Yasmin O.","serv":"Registro de música","temp":"quente","st":"Link enviado","pago":false},{"nome":"Lucas F.","serv":"Música (álbum)","temp":"morno","st":"Em atendimento","pago":false},{"nome":"Aline P.","serv":"Registro de música","temp":"frio","st":"Em atendimento","pago":false},{"nome":"Lucas F.","serv":"Registro de música","temp":"quente","st":"Pago ✓","pago":true},{"nome":"Felipe G.","serv":"Registro de música","temp":"quente","st":"Link enviado","pago":false}],"aprendizado":{"vazio":false,"termos":[{"t":"registrar música","n":48},{"t":"direito autoral","n":41},{"t":"quanto custa","n":37},{"t":"letra e melodia","n":29},{"t":"proteger","n":26},{"t":"plágio","n":19},{"t":"nome artístico","n":15},{"t":"álbum","n":12},{"t":"INPI","n":9},{"t":"cópia","n":7}],"duvidas":[{"t":"Quanto tempo demora o registro?","n":22},{"t":"O que está incluído no valor?","n":18},{"t":"Preciso registrar letra e melodia separado?","n":14},{"t":"Como pago? Tem parcelamento?","n":13},{"t":"Registro garante que ninguém copia?","n":9}],"objecoes":[{"t":"Tá caro / cabe no orçamento?","n":16},{"t":"Vou pensar / depois eu vejo","n":12},{"t":"É golpe? Desconfiança","n":7},{"t":"Quero falar por telefone","n":5}]},"modo":"demo"},"30d":{"demo":true,"periodoLabel":"últimos 30 dias","atualizado":"14/10/2026 10:52 · prévia V2","vazio":false,"kpis":{"leads":129,"delta":514,"leads_hoje":1,"taxa_qualif":72,"registros":24,"receita":19970,"ticket":832,"outros":17},"leadsPorDia":[4,5,0,3,11,4,5,5,5,3,2,3,6,6,6,2,2,4,5,6,6,3,1,3,4,4,4,5,7,5],"funil":[{"label":"Leads recebidos","val":129,"pct":100},{"label":"Qualificados (quente+morno)","val":93,"pct":72},{"label":"Em negociação / link enviado","val":42,"pct":33},{"label":"Registros pagos","val":24,"pct":19,"destaque":true}],"servicos":[{"nome":"Música","val":87},{"nome":"Marca","val":9},{"nome":"Outros","val":5}],"classif":[{"nome":"Quente","val":38,"cor":"#2fbd6b"},{"nome":"Morno","val":34,"cor":"#e0a62a"},{"nome":"Frio","val":28,"cor":"#8a8178"}],"ultimos":[{"nome":"Camila S.","serv":"Registro de música","temp":"morno","st":"Em atendimento","pago":false},{"nome":"Caio R.","serv":"Registro de música","temp":"frio","st":"Em atendimento","pago":false},{"nome":"Rodrigo N.","serv":"Registro de música","temp":"quente","st":"Pago ✓","pago":true},{"nome":"Yasmin O.","serv":"Registro de música","temp":"quente","st":"Link enviado","pago":false},{"nome":"Lucas F.","serv":"Música (álbum)","temp":"morno","st":"Em atendimento","pago":false},{"nome":"Aline P.","serv":"Registro de música","temp":"frio","st":"Em atendimento","pago":false},{"nome":"Lucas F.","serv":"Registro de música","temp":"quente","st":"Pago ✓","pago":true},{"nome":"Felipe G.","serv":"Registro de música","temp":"quente","st":"Link enviado","pago":false}],"aprendizado":{"vazio":false,"termos":[{"t":"registrar música","n":48},{"t":"direito autoral","n":41},{"t":"quanto custa","n":37},{"t":"letra e melodia","n":29},{"t":"proteger","n":26},{"t":"plágio","n":19},{"t":"nome artístico","n":15},{"t":"álbum","n":12},{"t":"INPI","n":9},{"t":"cópia","n":7}],"duvidas":[{"t":"Quanto tempo demora o registro?","n":22},{"t":"O que está incluído no valor?","n":18},{"t":"Preciso registrar letra e melodia separado?","n":14},{"t":"Como pago? Tem parcelamento?","n":13},{"t":"Registro garante que ninguém copia?","n":9}],"objecoes":[{"t":"Tá caro / cabe no orçamento?","n":16},{"t":"Vou pensar / depois eu vejo","n":12},{"t":"É golpe? Desconfiança","n":7},{"t":"Quero falar por telefone","n":5}]},"modo":"demo"},"mes":{"demo":true,"periodoLabel":"este mês","atualizado":"14/10/2026 10:52 · prévia V2","vazio":false,"kpis":{"leads":58,"delta":-6,"leads_hoje":1,"taxa_qualif":72,"registros":12,"receita":9550,"ticket":796,"outros":10},"leadsPorDia":[2,4,5,6,6,3,1,3,4,4,4,5,7,5],"funil":[{"label":"Leads recebidos","val":58,"pct":100},{"label":"Qualificados (quente+morno)","val":42,"pct":72},{"label":"Em negociação / link enviado","val":18,"pct":31},{"label":"Registros pagos","val":12,"pct":21,"destaque":true}],"servicos":[{"nome":"Música","val":83},{"nome":"Marca","val":10},{"nome":"Outros","val":7}],"classif":[{"nome":"Quente","val":41,"cor":"#2fbd6b"},{"nome":"Morno","val":31,"cor":"#e0a62a"},{"nome":"Frio","val":28,"cor":"#8a8178"}],"ultimos":[{"nome":"Camila S.","serv":"Registro de música","temp":"morno","st":"Em atendimento","pago":false},{"nome":"Caio R.","serv":"Registro de música","temp":"frio","st":"Em atendimento","pago":false},{"nome":"Rodrigo N.","serv":"Registro de música","temp":"quente","st":"Pago ✓","pago":true},{"nome":"Yasmin O.","serv":"Registro de música","temp":"quente","st":"Link enviado","pago":false},{"nome":"Lucas F.","serv":"Música (álbum)","temp":"morno","st":"Em atendimento","pago":false},{"nome":"Aline P.","serv":"Registro de música","temp":"frio","st":"Em atendimento","pago":false},{"nome":"Lucas F.","serv":"Registro de música","temp":"quente","st":"Pago ✓","pago":true},{"nome":"Felipe G.","serv":"Registro de música","temp":"quente","st":"Link enviado","pago":false}],"aprendizado":{"vazio":false,"termos":[{"t":"registrar música","n":48},{"t":"direito autoral","n":41},{"t":"quanto custa","n":37},{"t":"letra e melodia","n":29},{"t":"proteger","n":26},{"t":"plágio","n":19},{"t":"nome artístico","n":15},{"t":"álbum","n":12},{"t":"INPI","n":9},{"t":"cópia","n":7}],"duvidas":[{"t":"Quanto tempo demora o registro?","n":22},{"t":"O que está incluído no valor?","n":18},{"t":"Preciso registrar letra e melodia separado?","n":14},{"t":"Como pago? Tem parcelamento?","n":13},{"t":"Registro garante que ninguém copia?","n":9}],"objecoes":[{"t":"Tá caro / cabe no orçamento?","n":16},{"t":"Vou pensar / depois eu vejo","n":12},{"t":"É golpe? Desconfiança","n":7},{"t":"Quero falar por telefone","n":5}]},"modo":"demo"},"mespassado":{"demo":true,"periodoLabel":"mês passado","atualizado":"14/10/2026 10:52 · prévia V2","vazio":false,"kpis":{"leads":92,"delta":100,"leads_hoje":1,"taxa_qualif":71,"registros":14,"receita":12380,"ticket":884,"outros":10},"leadsPorDia":[0,0,0,0,0,0,0,0,0,5,5,5,3,6,4,2,2,8,6,6,2,7,4,2,3,4,7,6,3,2],"funil":[{"label":"Leads recebidos","val":92,"pct":100},{"label":"Qualificados (quente+morno)","val":65,"pct":71},{"label":"Em negociação / link enviado","val":32,"pct":35},{"label":"Registros pagos","val":14,"pct":15,"destaque":true}],"servicos":[{"nome":"Música","val":89},{"nome":"Marca","val":7},{"nome":"Outros","val":4}],"classif":[{"nome":"Quente","val":34,"cor":"#2fbd6b"},{"nome":"Morno","val":37,"cor":"#e0a62a"},{"nome":"Frio","val":29,"cor":"#8a8178"}],"ultimos":[{"nome":"Caio R.","serv":"Música (álbum)","temp":"morno","st":"Em atendimento","pago":false},{"nome":"Yasmin O.","serv":"Registro de música","temp":"quente","st":"Pago ✓","pago":true},{"nome":"Aline P.","serv":"Registro de música","temp":"morno","st":"Em atendimento","pago":false},{"nome":"Thiago B.","serv":"Registro de música","temp":"quente","st":"Link enviado","pago":false},{"nome":"Felipe G.","serv":"Registro de música","temp":"frio","st":"Em atendimento","pago":false},{"nome":"Thiago B.","serv":"Registro de música","temp":"frio","st":"Em atendimento","pago":false},{"nome":"Aline P.","serv":"Música (álbum)","temp":"quente","st":"Link enviado","pago":false},{"nome":"Gabriel A.","serv":"Registro de música","temp":"quente","st":"Em atendimento","pago":false}],"aprendizado":{"vazio":false,"termos":[{"t":"registrar música","n":48},{"t":"direito autoral","n":41},{"t":"quanto custa","n":37},{"t":"letra e melodia","n":29},{"t":"proteger","n":26},{"t":"plágio","n":19},{"t":"nome artístico","n":15},{"t":"álbum","n":12},{"t":"INPI","n":9},{"t":"cópia","n":7}],"duvidas":[{"t":"Quanto tempo demora o registro?","n":22},{"t":"O que está incluído no valor?","n":18},{"t":"Preciso registrar letra e melodia separado?","n":14},{"t":"Como pago? Tem parcelamento?","n":13},{"t":"Registro garante que ninguém copia?","n":9}],"objecoes":[{"t":"Tá caro / cabe no orçamento?","n":16},{"t":"Vou pensar / depois eu vejo","n":12},{"t":"É golpe? Desconfiança","n":7},{"t":"Quero falar por telefone","n":5}]},"modo":"demo"}},"real":{"hoje":{"demo":false,"periodoLabel":"hoje","atualizado":"14/10/2026 10:52 · prévia V2","vazio":true,"kpis":{"leads":0,"delta":0,"leads_hoje":0,"taxa_qualif":0,"registros":0,"receita":0,"ticket":0,"outros":0},"leadsPorDia":[0,0,0,0,0,0,0],"funil":[{"label":"Leads recebidos","val":0,"pct":100},{"label":"Qualificados (quente+morno)","val":0,"pct":0},{"label":"Em negociação / link enviado","val":0,"pct":0},{"label":"Registros pagos","val":0,"pct":0,"destaque":true}],"servicos":[{"nome":"Música","val":0},{"nome":"Marca","val":0},{"nome":"Outros","val":0}],"classif":[{"nome":"Quente","val":0,"cor":"#2fbd6b"},{"nome":"Morno","val":0,"cor":"#e0a62a"},{"nome":"Frio","val":0,"cor":"#8a8178"}],"ultimos":[],"aprendizado":{"vazio":true,"termos":[],"duvidas":[],"objecoes":[]},"modo":"real"},"ontem":{"demo":false,"periodoLabel":"ontem","atualizado":"14/10/2026 10:52 · prévia V2","vazio":true,"kpis":{"leads":0,"delta":0,"leads_hoje":0,"taxa_qualif":0,"registros":0,"receita":0,"ticket":0,"outros":0},"leadsPorDia":[0,0,0,0,0,0,0],"funil":[{"label":"Leads recebidos","val":0,"pct":100},{"label":"Qualificados (quente+morno)","val":0,"pct":0},{"label":"Em negociação / link enviado","val":0,"pct":0},{"label":"Registros pagos","val":0,"pct":0,"destaque":true}],"servicos":[{"nome":"Música","val":0},{"nome":"Marca","val":0},{"nome":"Outros","val":0}],"classif":[{"nome":"Quente","val":0,"cor":"#2fbd6b"},{"nome":"Morno","val":0,"cor":"#e0a62a"},{"nome":"Frio","val":0,"cor":"#8a8178"}],"ultimos":[],"aprendizado":{"vazio":true,"termos":[],"duvidas":[],"objecoes":[]},"modo":"real"},"7d":{"demo":false,"periodoLabel":"últimos 7 dias","atualizado":"14/10/2026 10:52 · prévia V2","vazio":true,"kpis":{"leads":0,"delta":0,"leads_hoje":0,"taxa_qualif":0,"registros":0,"receita":0,"ticket":0,"outros":0},"leadsPorDia":[0,0,0,0,0,0,0],"funil":[{"label":"Leads recebidos","val":0,"pct":100},{"label":"Qualificados (quente+morno)","val":0,"pct":0},{"label":"Em negociação / link enviado","val":0,"pct":0},{"label":"Registros pagos","val":0,"pct":0,"destaque":true}],"servicos":[{"nome":"Música","val":0},{"nome":"Marca","val":0},{"nome":"Outros","val":0}],"classif":[{"nome":"Quente","val":0,"cor":"#2fbd6b"},{"nome":"Morno","val":0,"cor":"#e0a62a"},{"nome":"Frio","val":0,"cor":"#8a8178"}],"ultimos":[],"aprendizado":{"vazio":true,"termos":[],"duvidas":[],"objecoes":[]},"modo":"real"},"14d":{"demo":false,"periodoLabel":"últimos 14 dias","atualizado":"14/10/2026 10:52 · prévia V2","vazio":true,"kpis":{"leads":0,"delta":0,"leads_hoje":0,"taxa_qualif":0,"registros":0,"receita":0,"ticket":0,"outros":0},"leadsPorDia":[0,0,0,0,0,0,0,0,0,0,0,0,0,0],"funil":[{"label":"Leads recebidos","val":0,"pct":100},{"label":"Qualificados (quente+morno)","val":0,"pct":0},{"label":"Em negociação / link enviado","val":0,"pct":0},{"label":"Registros pagos","val":0,"pct":0,"destaque":true}],"servicos":[{"nome":"Música","val":0},{"nome":"Marca","val":0},{"nome":"Outros","val":0}],"classif":[{"nome":"Quente","val":0,"cor":"#2fbd6b"},{"nome":"Morno","val":0,"cor":"#e0a62a"},{"nome":"Frio","val":0,"cor":"#8a8178"}],"ultimos":[],"aprendizado":{"vazio":true,"termos":[],"duvidas":[],"objecoes":[]},"modo":"real"},"30d":{"demo":false,"periodoLabel":"últimos 30 dias","atualizado":"14/10/2026 10:52 · prévia V2","vazio":true,"kpis":{"leads":0,"delta":0,"leads_hoje":0,"taxa_qualif":0,"registros":0,"receita":0,"ticket":0,"outros":0},"leadsPorDia":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"funil":[{"label":"Leads recebidos","val":0,"pct":100},{"label":"Qualificados (quente+morno)","val":0,"pct":0},{"label":"Em negociação / link enviado","val":0,"pct":0},{"label":"Registros pagos","val":0,"pct":0,"destaque":true}],"servicos":[{"nome":"Música","val":0},{"nome":"Marca","val":0},{"nome":"Outros","val":0}],"classif":[{"nome":"Quente","val":0,"cor":"#2fbd6b"},{"nome":"Morno","val":0,"cor":"#e0a62a"},{"nome":"Frio","val":0,"cor":"#8a8178"}],"ultimos":[],"aprendizado":{"vazio":true,"termos":[],"duvidas":[],"objecoes":[]},"modo":"real"},"mes":{"demo":false,"periodoLabel":"este mês","atualizado":"14/10/2026 10:52 · prévia V2","vazio":true,"kpis":{"leads":0,"delta":0,"leads_hoje":0,"taxa_qualif":0,"registros":0,"receita":0,"ticket":0,"outros":0},"leadsPorDia":[0,0,0,0,0,0,0,0,0,0,0,0,0,0],"funil":[{"label":"Leads recebidos","val":0,"pct":100},{"label":"Qualificados (quente+morno)","val":0,"pct":0},{"label":"Em negociação / link enviado","val":0,"pct":0},{"label":"Registros pagos","val":0,"pct":0,"destaque":true}],"servicos":[{"nome":"Música","val":0},{"nome":"Marca","val":0},{"nome":"Outros","val":0}],"classif":[{"nome":"Quente","val":0,"cor":"#2fbd6b"},{"nome":"Morno","val":0,"cor":"#e0a62a"},{"nome":"Frio","val":0,"cor":"#8a8178"}],"ultimos":[],"aprendizado":{"vazio":true,"termos":[],"duvidas":[],"objecoes":[]},"modo":"real"},"mespassado":{"demo":false,"periodoLabel":"mês passado","atualizado":"14/10/2026 10:52 · prévia V2","vazio":true,"kpis":{"leads":0,"delta":0,"leads_hoje":0,"taxa_qualif":0,"registros":0,"receita":0,"ticket":0,"outros":0},"leadsPorDia":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"funil":[{"label":"Leads recebidos","val":0,"pct":100},{"label":"Qualificados (quente+morno)","val":0,"pct":0},{"label":"Em negociação / link enviado","val":0,"pct":0},{"label":"Registros pagos","val":0,"pct":0,"destaque":true}],"servicos":[{"nome":"Música","val":0},{"nome":"Marca","val":0},{"nome":"Outros","val":0}],"classif":[{"nome":"Quente","val":0,"cor":"#2fbd6b"},{"nome":"Morno","val":0,"cor":"#e0a62a"},{"nome":"Frio","val":0,"cor":"#8a8178"}],"ultimos":[],"aprendizado":{"vazio":true,"termos":[],"duvidas":[],"objecoes":[]},"modo":"real"}}};
 
 function assinatura(d){ const c = {...d}; delete c.atualizado; return JSON.stringify(c); }
 
@@ -150,57 +193,66 @@ function pal(){
   return {red:g('--red'), line:g('--line'), faint:g('--faint'), ink:g('--ink'), inkSoft:g('--ink-soft')};
 }
 
-async function carregar(){
-  let d;
-  try {
-    const r = await fetch('dados.php', {credentials:'same-origin'});
-    if(r.status === 401){ location.href = 'login.php'; return; }
-    d = await r.json();
-  } catch(e){
-    document.getElementById('app').innerHTML = '<div class="loading">Não foi possível carregar os dados. Recarregue a página.</div>';
-    return;
-  }
-  DADOS = d;
-  ASSINATURA = assinatura(d);
-  render(d);
+// Busca os dados (o preview substitui esta função por dados embutidos).
+async function obterDados(modo, periodo){
+  const r = await fetch('dados.php?modo='+modo+'&periodo='+periodo, {credentials:'same-origin'});
+  if(r.status === 401){ location.href = 'login.php'; return null; }
+  return await r.json();
 }
 
-// Refresh a cada 5 min. Como vamos ler o CUSTO do Meta Ads (que muda ao longo do
-// dia mesmo sem lead novo), o ciclo SEMPRE busca os dados frescos e repinta.
-// Usamos a assinatura só pra NÃO piscar a tela quando nada mudou de fato.
+async function carregar(){
+  let d;
+  try { d = await obterDados(MODO, PERIODO); }
+  catch(e){ document.getElementById('app').innerHTML = '<div class="loading">Não foi possível carregar os dados. Recarregue a página.</div>'; return; }
+  if(!d) return;
+  DADOS = d; ASSINATURA = assinatura(d); render(d);
+}
+
+// Refresh a cada 5 min: busca sempre (pro custo do Meta no futuro) e só repinta se mudou.
 async function checarAtualizacao(){
   try{
-    const r = await fetch('dados.php', {credentials:'same-origin'});
-    if(r.status === 401){ location.href = 'login.php'; return; }
-    const d = await r.json();
-    DADOS = d;
+    const d = await obterDados(MODO, PERIODO);
+    if(!d) return;
     const a = assinatura(d);
-    if(a !== ASSINATURA){ ASSINATURA = a; render(d); }  // só repinta se algo mudou (lead, pagamento, custo Meta)
-  }catch(e){ /* silencioso: tenta de novo no próximo ciclo */ }
+    DADOS = d;
+    if(a !== ASSINATURA){ ASSINATURA = a; render(d); }
+  }catch(e){}
 }
 /* refresh desligado no preview */
 
 function render(d){
   const k = d.kpis;
-  if(d.demo){ const b=document.getElementById('demoBadge'); if(b) b.style.display='inline-block'; }
+  const b = document.getElementById('demoBadge');
+  if(d.demo){ b.style.display='inline-block'; b.className='badge-demo'; b.textContent='● DADOS DE DEMONSTRAÇÃO'; }
+  else { b.style.display='inline-block'; b.className='badge-demo oficial'; b.textContent='● PAINEL OFICIAL'; }
   document.getElementById('updated').textContent = 'Atualizado em ' + d.atualizado;
 
+  const deltaCls = k.delta >= 0 ? 'up' : 'down';
+  const deltaTxt = (k.delta >= 0 ? '▲ ' : '▼ ') + Math.abs(k.delta) + '% vs. período anterior';
+
+  const avisoOficialVazio = (!d.demo && d.vazio) ? `
+    <div class="aviso"><b>Painel oficial pronto e aguardando a Bia entrar no ar.</b>
+    Assim que os primeiros leads reais chegarem, os números aparecem aqui sozinhos —
+    sem você mexer em nada. Enquanto isso, veja o botão <b>Demonstração</b> pra visualizar
+    como o painel fica cheio.</div>` : '';
+
   document.getElementById('app').innerHTML = `
-    <div class="sec-label">Visão do mês</div>
+    ${avisoOficialVazio}
+    <div class="sec-label">Visão — ${d.periodoLabel}</div>
     <div class="kpis">
-      <div class="kpi"><div class="label">Leads no mês</div><div class="num">${fmt(k.leads_mes)}</div><div class="sub up">▲ ${k.leads_mes_delta}% vs. mês anterior</div></div>
-      <div class="kpi"><div class="label">Leads hoje</div><div class="num">${fmt(k.leads_hoje)}</div><div class="sub">${k.leads_hoje_sub}</div></div>
+      <div class="kpi"><div class="label">Leads no período</div><div class="num">${fmt(k.leads)}</div><div class="sub ${deltaCls}">${deltaTxt}</div></div>
       <div class="kpi"><div class="label">Taxa de qualificação</div><div class="num">${k.taxa_qualif}%</div><div class="sub">quentes + mornos</div></div>
-      <div class="kpi"><div class="label">Registros fechados</div><div class="num">${fmt(k.registros)}</div><div class="sub">música · R$ 350</div></div>
-      <div class="kpi"><div class="label">Receita Camada 1</div><div class="num">${fmt(k.receita_c1)}</div><div class="sub">R$ (${k.registros} × 350)</div></div>
-      <div class="kpi"><div class="label">Outros serviços (capturados)</div><div class="num">${fmt(k.alto_ticket)}</div><div class="sub">leads na base · Camada 2</div></div>
+      <div class="kpi"><div class="label">Registros fechados</div><div class="num">${fmt(k.registros)}</div><div class="sub">música paga</div></div>
+      <div class="kpi"><div class="label">Receita (Camada 1)</div><div class="num">${brl(k.receita)}</div><div class="sub">registros de música</div></div>
+      <div class="kpi"><div class="label">Ticket médio</div><div class="num">${brl(k.ticket)}</div><div class="sub">por registro</div></div>
+      <div class="kpi"><div class="label">Outros serviços</div><div class="num">${fmt(k.outros)}</div><div class="sub">capturados · Camada 2</div></div>
     </div>
 
     <div class="sec-label">Fluxo de leads</div>
     <div class="grid2">
       <div class="panel">
         <h3>Leads por dia</h3>
-        <div class="psub">Últimos ${d.leadsPorDia.length} dias — inclui madrugada (a IA atende 24h)</div>
+        <div class="psub">A IA atende 24h — inclui madrugada</div>
         <svg id="chartLine" viewBox="0 0 680 220" width="100%" height="220" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Leads por dia"></svg>
       </div>
       <div class="panel">
@@ -219,24 +271,26 @@ function render(d){
       </div>
       <div class="panel">
         <h3>Classificação dos leads</h3>
-        <div class="psub">Como a IA qualificou o mês</div>
+        <div class="psub">Como a IA qualificou o período</div>
         <svg id="chartDonut" viewBox="0 0 320 180" width="100%" height="180" role="img" aria-label="Classificação dos leads"></svg>
       </div>
     </div>
 
+    <div class="sec-label">O que a IA está aprendendo</div>
+    <div class="grid3" id="aprendizado"></div>
+
     <div class="sec-label">Últimos atendimentos</div>
     <div class="panel">
-      <table>
+      ${d.ultimos.length ? `<table>
         <thead><tr><th>Lead</th><th>Serviço</th><th>Classificação</th><th>Status</th></tr></thead>
         <tbody id="tbody"></tbody>
-      </table>
+      </table>` : `<div class="vazio">Nenhum atendimento neste período ainda.</div>`}
     </div>
 
     ${d.demo ? `<div class="foot">
-      <b>Dados de demonstração.</b> Este painel mostra como a Jaqueline e o Ian vão
-      acompanhar a operação em tempo real. Os números acima são ilustrativos — o
-      próximo passo é conectar à fonte de dados real (leads que já estão chegando +
-      conversas da IA) para o painel atualizar sozinho.
+      <b>Dados de demonstração.</b> Números ilustrativos pra mostrar como o painel fica
+      cheio. Clique em <b>Oficial</b> pra ver o painel real (que liga sozinho quando a Bia
+      começar a atender).
     </div>` : ``}
   `;
 
@@ -244,27 +298,28 @@ function render(d){
   desenharFunil(d.funil);
   desenharBarras(d.servicos);
   desenharDonut(d.classif);
-  desenharTabela(d.ultimos);
+  if(d.ultimos.length) desenharTabela(d.ultimos);
+  desenharAprendizado(d.aprendizado);
 }
 
 function desenharLinha(leadsPorDia){
   const p = pal();
   const w=680,h=220,pl=34,pr=14,pt=16,pb=28;
-  const max=Math.max(...leadsPorDia), n=leadsPorDia.length;
-  const x=i=> pl + i*(w-pl-pr)/(n-1);
+  const max=Math.max(1,...leadsPorDia), n=leadsPorDia.length;
+  const x=i=> pl + i*(w-pl-pr)/Math.max(1,(n-1));
   const y=v=> pt + (1-v/max)*(h-pt-pb);
   const pts=leadsPorDia.map((v,i)=>[x(i),y(v)]);
   const path=pts.map((q,i)=>(i?"L":"M")+q[0].toFixed(1)+" "+q[1].toFixed(1)).join(" ");
   const area=path+` L ${x(n-1).toFixed(1)} ${h-pb} L ${pl} ${h-pb} Z`;
   let g="";
-  for(let kk=0;kk<=max;kk+=Math.ceil(max/4)){ const yy=y(kk); g+=`<line x1="${pl}" y1="${yy}" x2="${w-pr}" y2="${yy}" stroke="${p.line}" stroke-width="1"/><text x="${pl-8}" y="${yy+4}" font-size="10" text-anchor="end" fill="${p.faint}">${kk}</text>`; }
+  const step=Math.max(1,Math.ceil(max/4));
+  for(let kk=0;kk<=max;kk+=step){ const yy=y(kk); g+=`<line x1="${pl}" y1="${yy}" x2="${w-pr}" y2="${yy}" stroke="${p.line}" stroke-width="1"/><text x="${pl-8}" y="${yy+4}" font-size="10" text-anchor="end" fill="${p.faint}">${kk}</text>`; }
   let lx="";
-  for(let i=0;i<n;i+=2){ lx+=`<text x="${x(i)}" y="${h-10}" font-size="10" fill="${p.faint}" text-anchor="middle">${i-n+1===0?'hoje':(n-1-i)+'d'}</text>`; }
+  for(let i=0;i<n;i+=Math.max(1,Math.round(n/7))){ lx+=`<text x="${x(i)}" y="${h-10}" font-size="10" fill="${p.faint}" text-anchor="middle">${n-1-i===0?'hoje':(n-1-i)+'d'}</text>`; }
   const dots=pts.map(q=>`<circle cx="${q[0].toFixed(1)}" cy="${q[1].toFixed(1)}" r="3" fill="${p.red}"/>`).join("");
   document.getElementById('chartLine').innerHTML =
     g + `<path d="${area}" fill="${p.red}" fill-opacity="0.10"/>` +
-    `<path d="${path}" fill="none" stroke="${p.red}" stroke-width="2.5" stroke-linejoin="round"/>` +
-    dots + lx;
+    `<path d="${path}" fill="none" stroke="${p.red}" stroke-width="2.5" stroke-linejoin="round"/>` + dots + lx;
 }
 
 function desenharFunil(funil){
@@ -286,10 +341,11 @@ function desenharBarras(servicos){
 
 function desenharDonut(classif){
   const p = pal();
-  const cx=90,cy=90,r=62,sw=26, tot=classif.reduce((a,b)=>a+b.val,0);
+  const cx=90,cy=90,r=62,sw=26, tot=classif.reduce((a,b)=>a+b.val,0)||1;
   let ang=-Math.PI/2, segs="";
   classif.forEach(c=>{
-    const a2=ang+ (c.val/tot)*2*Math.PI;
+    const frac=c.val/tot; if(frac<=0){return;}
+    const a2=ang+ frac*2*Math.PI;
     const x1=cx+r*Math.cos(ang), y1=cy+r*Math.sin(ang);
     const x2=cx+r*Math.cos(a2), y2=cy+r*Math.sin(a2);
     const large=(a2-ang)>Math.PI?1:0;
@@ -310,7 +366,29 @@ function desenharTabela(ultimos){
     </tr>`).join("");
 }
 
-// ===== alternar tema claro/escuro =====
+function desenharAprendizado(a){
+  const box = document.getElementById('aprendizado');
+  if(!a || a.vazio){
+    box.innerHTML = `<div class="panel" style="grid-column:1/-1"><div class="vazio">
+      Assim que a Bia começar a conversar, aqui aparecem os <b>termos mais falados</b>,
+      as <b>dúvidas</b> e as <b>objeções</b> mais comuns dos leads — a inteligência da operação
+      (tecnologia Anthropic) aprendendo com cada conversa.</div></div>`;
+    return;
+  }
+  const termos = a.termos.map(t=>`<span class="tag">${t.t} <span class="c">${t.n}</span></span>`).join("");
+  const duvidas = a.duvidas.map(q=>`<div class="qitem"><span class="qt">${q.t}</span><span class="qn">${q.n}</span></div>`).join("");
+  const obj = a.objecoes.map(q=>`<div class="qitem"><span class="qt">${q.t}</span><span class="qn">${q.n}</span></div>`).join("");
+  box.innerHTML = `
+    <div class="panel"><h3>Termos mais falados</h3><div class="psub">O que os leads mais citam</div>
+      <div class="tags">${termos}</div>
+      <div class="ia-nota">Mina das conversas da Bia — vira munição pra anúncios e script.</div></div>
+    <div class="panel"><h3>Dúvidas mais frequentes</h3><div class="psub">O que mais perguntam</div>
+      <div class="qlist">${duvidas}</div></div>
+    <div class="panel"><h3>Objeções mais comuns</h3><div class="psub">Onde a venda trava</div>
+      <div class="qlist">${obj}</div></div>`;
+}
+
+/* ===== tema ===== */
 function aplicarBotaoTema(){
   const t = document.documentElement.getAttribute('data-theme');
   const b = document.getElementById('btnTema');
@@ -322,14 +400,28 @@ document.getElementById('btnTema').addEventListener('click', function(){
   document.documentElement.setAttribute('data-theme', novo);
   try{ localStorage.setItem('dash-tema', novo); }catch(e){}
   aplicarBotaoTema();
-  if(DADOS) render(DADOS); // re-desenha gráficos com as cores do novo tema
+  if(DADOS) render(DADOS);
 });
 
+/* ===== controles: modo e período ===== */
+document.getElementById('segModo').addEventListener('click', function(e){
+  const btn = e.target.closest('button'); if(!btn) return;
+  MODO = btn.dataset.modo;
+  [...this.children].forEach(c=>c.classList.toggle('on', c===btn));
+  carregar();
+});
+document.getElementById('periodos').addEventListener('click', function(e){
+  const btn = e.target.closest('button'); if(!btn) return;
+  PERIODO = btn.dataset.p;
+  [...this.children].forEach(c=>c.classList.toggle('on', c===btn));
+  carregar();
+});
+
+obterDados = async function(m,p){ const M = window.PREVIEW_DATASETS[m] || window.PREVIEW_DATASETS.demo; return M[p] || M.mes; };
 aplicarBotaoTema();
-carregar = async function(){ const d = window.PREVIEW_DATA; DADOS = d; ASSINATURA = assinatura(d); render(d); };
 carregar();
 </script>
 
-<div style="position:fixed;bottom:14px;left:14px;z-index:99;background:#A80C11;color:#fff;font-family:system-ui,sans-serif;font-size:11px;font-weight:700;padding:6px 12px;border-radius:20px;box-shadow:0 6px 18px rgba(0,0,0,.25)">PRÉVIA V1 · ainda não publicada</div>
+<div style="position:fixed;bottom:14px;left:14px;z-index:99;background:#A80C11;color:#fff;font-family:system-ui,sans-serif;font-size:11px;font-weight:700;padding:6px 12px;border-radius:20px;box-shadow:0 6px 18px rgba(0,0,0,.25)">PRÉVIA V2 · ainda não publicada</div>
 </body>
 </html>
